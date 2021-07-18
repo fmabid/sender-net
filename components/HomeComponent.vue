@@ -9,12 +9,12 @@
       <!-- Header -->
       <div class="flex flex-row items-center justify-between">
         <p class="font-semibold text-2xl">Sorting Training System</p>
-        <button
+        <!-- <button
           class="py-2 px-6 rounded text-white text-sm bg-[#FF8D00]"
           @click="sort"
         >
           Sort
-        </button>
+        </button> -->
 
         <button
           class="py-2 px-6 rounded text-white text-sm bg-[#FF8D00]"
@@ -91,8 +91,9 @@
 
               <draggable
                 v-model="people"
-                class="text-gray-700 font-normal text-base"
                 tag="tbody"
+                class="text-gray-700 font-normal text-base"
+                @change="checkSorting"
               >
                 <tr
                   v-for="indivis in people.slice(0, inputNum)"
@@ -157,8 +158,12 @@ export default {
         tags: 'customers',
       },
       people: [],
+      sortedList: [],
       inputNum: 0,
+
+      // flags
       showModal: false,
+      endSorting: false,
     }
   },
   methods: {
@@ -169,12 +174,13 @@ export default {
           this.people = resp
 
           this.people.forEach((element) => {
-            element.potatoes = Math.floor(Math.random() * 10000) + 3
+            element.potatoes = Math.floor(Math.random() * 10000) + 1
           })
         })
     },
     sort() {
-      this.people = this.people.sort((a, b) => a.potatoes - b.potatoes)
+      this.sortedList = [...this.people]
+      this.sortedList.sort((a, b) => a.potatoes - b.potatoes)
     },
     startSorting() {
       this.toggleModal()
@@ -191,6 +197,14 @@ export default {
         this.inputNum = v
         this.getRandomData()
       }
+    },
+    checkSorting() {
+      if (this.isEqual(this.people, this.sortedList)) {
+        this.endSorting = true
+      }
+    },
+    isEqual(a, b) {
+      return JSON.stringify(a) === JSON.stringify(b)
     },
   },
 }
