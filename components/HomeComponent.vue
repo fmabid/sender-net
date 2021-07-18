@@ -1,11 +1,25 @@
 <template>
   <div class="relative flex items-top min-h-screen bg-gray-100 sm:pt-0">
+    <modal-component
+      :show="showModal"
+      @onSelect="hideModal"
+      @onStart="handleData"
+    />
     <div class="w-full p-16">
       <!-- Header -->
       <div class="flex flex-row items-center justify-between">
         <p class="font-semibold text-2xl">Sorting Training System</p>
+        <button
+          class="py-2 px-6 rounded text-white text-sm bg-[#FF8D00]"
+          @click="sort"
+        >
+          Sort
+        </button>
 
-        <button class="py-2 px-6 rounded text-white text-sm bg-[#FF8D00]">
+        <button
+          class="py-2 px-6 rounded text-white text-sm bg-[#FF8D00]"
+          @click="startSorting"
+        >
           Start Sorting
         </button>
       </div>
@@ -127,10 +141,11 @@
 <script>
 import draggable from 'vuedraggable'
 import IconChevronRight from './icons/IconChevronRight.vue'
+import ModalComponent from './ModalComponent.vue'
 import Tag from './utility/Tag.vue'
 
 export default {
-  components: { IconChevronRight, Tag, draggable },
+  components: { IconChevronRight, Tag, draggable, ModalComponent },
   data() {
     return {
       person: {
@@ -143,10 +158,8 @@ export default {
       },
       people: [],
       inputNum: 0,
+      showModal: false,
     }
-  },
-  mounted() {
-    this.getRandomData()
   },
   methods: {
     getRandomData() {
@@ -154,7 +167,30 @@ export default {
         .$get('https://my.api.mockaroo.com/ptatopeople.json?key=96f23b40')
         .then((resp) => {
           this.people = resp
+
+          this.people.forEach((element) => {
+            element.potatoes = Math.floor(Math.random() * 10000) + 3
+          })
         })
+    },
+    sort() {
+      this.people = this.people.sort((a, b) => a.potatoes - b.potatoes)
+    },
+    startSorting() {
+      this.toggleModal()
+    },
+    toggleModal() {
+      this.showModal = !this.showModal
+    },
+    hideModal() {
+      this.showModal = false
+    },
+    handleData(v) {
+      if (v) {
+        this.showModal = false
+        this.inputNum = v
+        this.getRandomData()
+      }
     },
   },
 }

@@ -19,7 +19,10 @@
         <div class="flex items-center justify-between p-5">
           <p class="text-lg font-semibold">How many people?</p>
 
-          <cancle class="text-gray-500 cursor-pointer" />
+          <cancle
+            class="text-gray-500 cursor-pointer"
+            @click.native="onHideModal"
+          />
         </div>
 
         <div class="px-5 pt-6 pb-10">
@@ -28,6 +31,7 @@
           </p>
 
           <input
+            v-model="input"
             class="
               outline-none
               w-full
@@ -40,20 +44,23 @@
             "
             type="number"
           />
+          <span v-if="err" class="text-red-700 text-xs"
+            >Number must be between 20 to 100</span
+          >
         </div>
 
         <div class="p-5 relative flex">
           <div class="space-x-3 ml-auto">
             <button
               class="bg-gray-300 px-8 py-2 rounded-md text-gray-600"
-              @click.prevent="onEmitValue"
+              @click="onHideModal"
             >
               Cancle
             </button>
 
             <button
               class="px-8 py-2 rounded-md text-white bg-[#FF8D00]"
-              @click.prevent="onEmitValue(false)"
+              @click="onEmitValue"
             >
               Start
             </button>
@@ -75,14 +82,23 @@ export default {
       default: false,
       type: Boolean,
     },
-    msg: {
-      default: '',
-      type: String,
-    },
+  },
+  data() {
+    return {
+      input: null,
+      err: false,
+    }
   },
   methods: {
-    onEmitValue() {
+    onHideModal() {
       this.$emit('onSelect')
+    },
+    onEmitValue() {
+      if (this.input < 20 || this.input > 100) {
+        this.err = true
+        return
+      }
+      this.$emit('onStart', this.input)
     },
   },
 }
