@@ -1,8 +1,7 @@
-<!-- Please remo
-  components: { IconChevronRight },ve this file from your project -->
 <template>
   <div class="relative flex items-top min-h-screen bg-gray-100 sm:pt-0">
     <div class="w-full p-16">
+      <!-- Header -->
       <div class="flex flex-row items-center justify-between">
         <p class="font-semibold text-2xl">Sorting Training System</p>
 
@@ -10,10 +9,11 @@
           Start Sorting
         </button>
       </div>
+      <!-- Header -->
 
       <div class="flex flex-col rounded shadow-md border mt-10">
         <div class="flex flex-row px-10 w-auto py-5 relative">
-          <p class="ml-auto">20 people in thins list</p>
+          <p class="ml-auto">{{ inputNum }} people in thins list</p>
         </div>
 
         <div class="block relative">
@@ -75,12 +75,19 @@
                 </tr>
               </thead>
 
-              <tbody class="text-gray-700 font-normal text-base">
-                <tr v-for="i in 10" :key="i">
+              <draggable
+                v-model="people"
+                class="text-gray-700 font-normal text-base"
+                tag="tbody"
+              >
+                <tr
+                  v-for="indivis in people.slice(0, inputNum)"
+                  :key="indivis.id"
+                >
                   <td class="border-t border-b border-gray-300 px-4 py-2">
                     <div
                       class="
-                        flex flex-row
+                        flex flex-rows
                         items-center
                         justify-between
                         space-x-2
@@ -89,26 +96,26 @@
                       <div class="flex flex-row items-center space-x-4">
                         <input type="checkbox" name="" />
 
-                        <p>dsdcs@mail.com</p>
+                        <p>{{ indivis.email }}</p>
                       </div>
 
                       <icon-chevron-right class="w-4" />
                     </div>
                   </td>
                   <td class="border border-r-0 border-gray-300 px-4 py-2">
-                    Adam
+                    {{ indivis.potatoes }}
                   </td>
                   <td class="border-t border-b border-gray-300 px-4 py-2">
-                    858
+                    <tag v-if="indivis.tags" :tag-name="indivis.tags" />
                   </td>
                   <td class="border-t border-b border-gray-300 px-4 py-2">
-                    858
+                    {{ indivis.name }}
                   </td>
                   <td class="border-t border-b border-gray-300 px-4 py-2">
-                    858
+                    {{ indivis.location }}
                   </td>
                 </tr>
-              </tbody>
+              </draggable>
             </table>
           </div>
         </div>
@@ -118,10 +125,38 @@
 </template>
 
 <script>
-import IconChevronRight from './IconChevronRight.vue'
+import draggable from 'vuedraggable'
+import IconChevronRight from './icons/IconChevronRight.vue'
+import Tag from './utility/Tag.vue'
 
 export default {
-  components: { IconChevronRight },
+  components: { IconChevronRight, Tag, draggable },
+  data() {
+    return {
+      person: {
+        id: 1,
+        name: 'King',
+        email: 'kjeandon0@dmoz.org',
+        location: 'Alvaiázere',
+        potatoes: 65,
+        tags: 'customers',
+      },
+      people: [],
+      inputNum: 0,
+    }
+  },
+  mounted() {
+    this.getRandomData()
+  },
+  methods: {
+    getRandomData() {
+      this.$axios
+        .$get('https://my.api.mockaroo.com/ptatopeople.json?key=96f23b40')
+        .then((resp) => {
+          this.people = resp
+        })
+    },
+  },
 }
 </script>
 
