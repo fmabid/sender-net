@@ -11,9 +11,11 @@
     "lint": "yarn lint:js"
   },
   "dependencies": {
+    "@nuxtjs/axios": "^5.13.6",
     "@nuxtjs/pwa": "^3.3.5",
     "core-js": "^3.15.1",
-    "nuxt": "^2.15.7"
+    "nuxt": "^2.15.7",
+    "vuedraggable": "^2.24.3"
   },
   "devDependencies": {
     "@babel/eslint-parser": "^7.14.7",
