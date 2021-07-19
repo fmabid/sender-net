@@ -16,6 +16,11 @@
           Sort
         </button> -->
 
+        <p v-if="endSorting" class="text-[#FF8D00] text-xl">
+          You took <span class="text-green-500">{{ timeDiff }}</span> min to
+          sort
+        </p>
+
         <button
           class="py-2 px-6 rounded text-white text-sm bg-[#FF8D00]"
           @click="startSorting"
@@ -95,10 +100,7 @@
                 class="text-gray-700 font-normal text-base"
                 @change="checkSorting"
               >
-                <tr
-                  v-for="indivis in people.slice(0, inputNum)"
-                  :key="indivis.id"
-                >
+                <tr v-for="indivis in people" :key="indivis.id">
                   <td class="border-t border-b border-gray-300 px-4 py-2">
                     <div
                       class="
@@ -149,17 +151,12 @@ export default {
   components: { IconChevronRight, Tag, draggable, ModalComponent },
   data() {
     return {
-      person: {
-        id: 1,
-        name: 'King',
-        email: 'kjeandon0@dmoz.org',
-        location: 'Alvaiázere',
-        potatoes: 65,
-        tags: 'customers',
-      },
       people: [],
       sortedList: [],
       inputNum: 0,
+      startTime: null,
+      endTime: null,
+      timeDiff: null,
 
       // flags
       showModal: false,
@@ -171,11 +168,13 @@ export default {
       this.$axios
         .$get('https://my.api.mockaroo.com/ptatopeople.json?key=96f23b40')
         .then((resp) => {
-          this.people = resp
+          this.people = resp.slice(0, this.inputNum)
 
+          this.startTime = Date.now()
           this.people.forEach((element) => {
             element.potatoes = Math.floor(Math.random() * 10000) + 1
           })
+          this.sort()
         })
     },
     sort() {
@@ -194,13 +193,15 @@ export default {
     handleData(v) {
       if (v) {
         this.showModal = false
-        this.inputNum = v
+        this.inputNum = parseInt(v)
         this.getRandomData()
       }
     },
     checkSorting() {
       if (this.isEqual(this.people, this.sortedList)) {
         this.endSorting = true
+        this.endTime = Date.now()
+        this.timeDiff = (this.endTime - this.startTime) / (1000 * 60) // min
       }
     },
     isEqual(a, b) {
